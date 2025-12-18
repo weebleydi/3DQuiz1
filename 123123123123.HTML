@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Квиз</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
+    body { 
+      min-height: 100vh; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 20px;
+    }
+    .app { 
+      width: 100%; max-width: 600px; 
+      background: rgba(255,255,255,0.95); 
+      border-radius: 20px; 
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .header { 
+      padding: 20px; 
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white; 
+      text-align: center;
+    }
+    .header h1 { font-size: 1.5rem; margin-bottom: 5px; }
+    .header p { font-size: 0.9rem; opacity: 0.9; }
+    .progress-section {
+      padding: 20px;
+      background: white;
+      border-bottom: 1px solid #eee;
+    }
+    .progress-label { font-size: 0.85rem; color: #666; margin-bottom: 10px; }
+    .score-bar {
+      height: 12px; 
+      background: #f0f0f0; 
+      border-radius: 10px; 
+      overflow: hidden;
+      position: relative;
+    }
+    .score-fill {
+      height: 100%; 
+      width: 0%;
+      background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573);
+      border-radius: 10px;
+      transition: width 1s ease, background 1s ease;
+      box-shadow: 0 0 20px rgba(0,255,0,0.5);
+    }
+    .question { 
+      padding: 30px 20px; 
+      min-height: 200px;
+      display: flex; 
+      flex-direction: column; 
+      gap: 20px;
+    }
+    .question-num { 
+      font-size: 0.8rem; 
+      color: #666; 
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .question-text { 
+      font-size: 1.3rem; 
+      font-weight: 600; 
+      line-height: 1.4;
+    }
+    .answers { display: flex; flex-direction: column; gap: 12px; }
+    .answer-btn { 
+      padding: 15px 20px; 
+      border: 2px solid #ddd; 
+      background: white;
+      border-radius: 12px; 
+      cursor: pointer; 
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      display: flex; align-items: center; gap: 15px;
+    }
+    .answer-letter {
+      width: 30px; height: 30px; 
+      border-radius: 50%; 
+      border: 2px solid #ddd;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.9rem;
+    }
+    .answer-btn:hover { 
+      border-color: #4facfe; 
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(79,172,254,0.3);
+    }
+    .answer-btn.correct { 
+      border-color: #2ed573; 
+      background: #d4f4dd;
+      box-shadow: 0 10px 25px rgba(46,213,115,0.4);
+    }
+    .answer-btn.wrong { 
+      border-color: #ff4757; 
+      background: #fadbd8;
+      box-shadow: 0 10px 25px rgba(255,71,87,0.4);
+    }
+    .answer-btn.disabled { pointer-events: none; opacity: 0.7; }
+    .footer { 
+      padding: 20px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      background: #f8f9fa;
+      border-top: 1px solid #eee;
+    }
+    .status { font-size: 0.9rem; color: #666; }
+    .next-btn { 
+      padding: 12px 30px; 
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white; 
+      border: none; 
+      border-radius: 25px;
+      font-weight: 600; 
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    .next-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(79,172,254,0.5); }
+    .overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8); 
+      display: none; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+    .overlay.active { display: flex; }
+    .overlay-card { 
+      background: white; 
+      border-radius: 20px; 
+      padding: 40px; 
+      max-width: 500px; 
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    }
+    .overlay h2 { font-size: 1.8rem; margin-bottom: 10px; color: #333; }
+    .result-stats { display: flex; flex-direction: column; gap: 15px; margin: 30px 0; }
+    .stat-row { display: flex; justify-content: space-between; font-size: 1.1rem; }
+    .stat-value { font-weight: 700; color: #4facfe; }
+    .final-bar { 
+      height: 15px; margin: 20px 0; 
+      background: #f0f0f0; border-radius: 10px; overflow: hidden;
+    }
+    .final-fill { 
+      height: 100%; width: 0%; 
+      background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573);
+      transition: width 1.5s ease;
+      border-radius: 10px;
+    }
+    @media (max-width: 600px) {
+      .app { margin: 10px; border-radius: 15px; }
+      .question-text { font-size: 1.1rem; }
+      .overlay-card { padding: 30px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <h1 id="title">3D Квиз</h1>
+      <p id="subtitle">Тест по основам 3D графики</p>
+    </div>
+    
+    <div class="progress-section">
+      <div class="progress-label">Прогресс: <span id="progNum">0</span>/7</div>
+      <div class="score-bar">
+        <div class="score-fill" id="scoreBar"></div>
+      </div>
+      <div style="text-align:center; margin-top:10px; font-size:1.1rem; font-weight:600;" id="scoreText">0/7</div>
+    </div>
+
+    <div class="question">
+      <div class="question-num" id="qNum">Вопрос 1 из 7</div>
+      <div class="question-text" id="question">Нажмите ПУСК чтобы начать</div>
+      <div class="answers" id="answers"></div>
+    </div>
+
+    <div class="footer">
+      <div class="status" id="status">Готов к старту</div>
+      <button class="next-btn" id="nextBtn">ПУСК ➤</button>
+    </div>
+  </div>
+
+  <div class="overlay active" id="startOverlay">
+    <div class="overlay-card">
+      <h2>🎮 3D Квиз</h2>
+      <p style="color:#666; margin-bottom:30px;">7 быстрых вопросов по основам 3D графики</p>
+      <button class="next-btn" id="startBtn" style="width:100%; padding:15px;">НАЧАТЬ ➤</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="endOverlay">
+    <div class="overlay-card">
+      <h2 id="endTitle">Результаты</h2>
+      <div class="result-stats">
+        <div class="stat-row">
+          <span>Правильных:</span>
+          <span class="stat-value" id="endCorrect">0</span>
+        </div>
+        <div class="stat-row">
+          <span>Всего:</span>
+          <span class="stat-value">7</span>
+        </div>
+        <div class="stat-row">
+          <span>Процент:</span>
+          <span class="stat-value" id="endPercent">0%</span>
+        </div>
+      </div>
+      <div class="final-bar">
+        <div class="final-fill" id="finalBar"></div>
+      </div>
+      <div id="endComment" style="font-size:1.1rem; margin-top:20px; padding:20px; background:#f8f9fa; border-radius:12px;"></div>
+      <button class="next-btn" id="restartBtn" style="width:100%; padding:15px; margin-top:30px;">ИГРАТЬ ЕЩЁ ⟳</button>
+    </div>
+  </div>
+
+  <script>
+    const QUESTIONS_PER_RUN = 7;
+    const allQuestions = [
+      { text: "Как проще всего объяснить, что такое 3D‑графика?", options: ["Любые картинки на компьютере", "Объёмные модели в виртуальном пространстве, которые можно крутить", "Только мобильные игры"], correctIndex: 1 },
+      { text: "Сколько измерений есть у 3D‑объекта?", options: ["Два: ширина и высота", "Три: ширина, высота и глубина", "Четыре: плюс время"], correctIndex: 1 },
+      { text: "Как можно представить себе 3D‑моделирование?", options: ["Как лепку скульптуры, только в компьютере", "Как рисование карандашом", "Как монтаж видео"], correctIndex: 0 },
+      { text: "Где точно используется 3D‑графика?", options: ["В мультфильмах и кино со спецэффектами", "В компьютерных играх", "В архитектурных визуализациях и проектировании", "Во всех перечисленных вариантах"], correctIndex: 3 },
+      { text: "Как называется специалист, который создаёт 3D‑объекты и персонажей?", options: ["3D‑моделлер (3D‑художник)", "3D‑фотограф", "3D‑копирайтер"], correctIndex: 0 },
+      { text: "Какой из этих объектов удобнее всего представить как 3D‑модель?", options: ["Куб, который можно крутить со всех сторон", "Плоский рисунок круга", "Текстовый документ"], correctIndex: 0 },
+      { text: "Как называется процесс превращения 3D‑сцены в готовую картинку или кадр видео?", options: ["Рендер (рендеринг)", "Печать", "Скроллинг"], correctIndex: 0 }
+    ];
+
+    let selectedQuestions = [], currentIndex = 0, score = 0, answered = false, quizStarted = false;
+
+    const els = {
+      question: document.getElementById('question'),
+      answers: document.getElementById('answers'),
+      qNum: document.getElementById('qNum'),
+      progNum: document.getElementById('progNum'),
+      scoreBar: document.getElementById('scoreBar'),
+      scoreText: document.getElementById('scoreText'),
+      status: document.getElementById('status'),
+      nextBtn: document.getElementById('nextBtn'),
+      startOverlay: document.getElementById('startOverlay'),
+      endOverlay: document.getElementById('endOverlay'),
+      endCorrect: document.getElementById('endCorrect'),
+      endPercent: document.getElementById('endPercent'),
+      finalBar: document.getElementById('finalBar'),
+      endComment: document.getElementById('endComment'),
+      startBtn: document.getElementById('startBtn'),
+      restartBtn: document.getElementById('restartBtn')
+    };
+
+    function pickQuestions() {
+      const indices = allQuestions.map((_, i) => i).sort(() => Math.random() - 0.5).slice(0, QUESTIONS_PER_RUN);
+      selectedQuestions = indices.map(i => ({...allQuestions[i]}));
+    }
+
+    function renderQuestion() {
+      const q = selectedQuestions[currentIndex];
+      answered = false;
+      els.question.textContent = q.text;
+      els.qNum.textContent = `Вопрос ${currentIndex + 1} из ${QUESTIONS_PER_RUN}`;
+      els.progNum.textContent = currentIndex + 1;
+      els.scoreText.textContent = `${score}/${QUESTIONS_PER_RUN}`;
+      
+      const progress = ((currentIndex / QUESTIONS_PER_RUN) * 100);
+      els.scoreBar.style.width = `${progress}%`;
+      
+      els.answers.innerHTML = '';
+      const letters = 'ABCDE'.split('');
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.innerHTML = `<div class="answer-letter">${letters[i]}</div><span>${opt}</span>`;
+        btn.onclick = () => handleAnswer(i, btn);
+        els.answers.appendChild(btn);
+      });
+      
+      els.status.textContent = 'Выберите ответ';
+      els.nextBtn.textContent = currentIndex === QUESTIONS_PER_RUN - 1 ? 'РЕЗУЛЬТАТ' : 'ДАЛЕЕ ➤';
+    }
+
+    function handleAnswer(selected, btn) {
+      if (!quizStarted || answered) return;
+      answered = true;
+      
+      const q = selectedQuestions[currentIndex];
+      const buttons = els.answers.querySelectorAll('.answer-btn');
+      
+      buttons.forEach((b, i) => {
+        b.classList.add('disabled');
+        if (i === q.correctIndex) b.classList.add('correct');
+      });
+      
+      if (selected === q.correctIndex) {
+        score++;
+        btn.classList.add('correct');
+        els.status.textContent = '✅ Верно!';
+      } else {
+        btn.classList.add('wrong');
+        els.status.textContent = '❌ Правильный ответ подсвечен';
+      }
+      
+      els.scoreText.textContent = `${score}/${QUESTIONS_PER_RUN}`;
+      els.scoreBar.style.width = `${(currentIndex + 1) / QUESTIONS_PER_RUN * 100}%`;
+    }
+
+    function showResults() {
+      const percent = Math.round(score / QUESTIONS_PER_RUN * 100);
+      els.endCorrect.textContent = score;
+      els.endPercent.textContent = `${percent}%`;
+      els.finalBar.style.width = `${percent}%`;
+      
+      let comment = '';
+      if (percent >= 85) comment = '🎉 Отличный результат! Ты готов к 3D!';
+      else if (percent >= 60) comment = '👍 Хороший старт! Продолжай изучать 3D.';
+      else if (percent >= 30) comment = '📚 База есть! Пора углубляться в тему.';
+      else comment = '🚀 Начало положено! 3D ждёт тебя!';
+      
+      els.endComment.textContent = comment;
+      els.endOverlay.classList.add('active');
+    }
+
+    function startQuiz() {
+      pickQuestions();
+      currentIndex = 0;
+      score = 0;
+      quizStarted = true;
+      els.startOverlay.classList.remove('active');
+      els.endOverlay.classList.remove('active');
+      renderQuestion();
+    }
+
+    els.nextBtn.onclick = () => {
+      if (!quizStarted) return startQuiz();
+      if (!answered) return;
+      if (currentIndex < QUESTIONS_PER_RUN - 1) {
+        currentIndex++;
+        renderQuestion();
+      } else {
+        showResults();
+      }
+    };
+    
+    els.startBtn.onclick = startQuiz;
+    els.restartBtn.onclick = startQuiz;
+  </script>
+</body>
+</html>
