@@ -5,357 +5,490 @@
   <title>3D Квиз</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
-    body {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #333;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .app {
-      width: 100%;
-      max-width: 720px;
-      background: rgba(255,255,255,0.96);
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+    *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,system-ui,sans-serif;}
+
+    body{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      color:#111827;
+
+      background:
+        radial-gradient(circle at 0 0,#e0f2fe 0,transparent 55%),
+        radial-gradient(circle at 100% 0,#fee2e2 0,transparent 55%),
+        radial-gradient(circle at 50% 100%,#fef9c3 0,#eef2ff 60%);
+      background-size:160% 160%;
+      animation:bgFlow 18s ease-in-out infinite alternate;
     }
 
-    .logo-bar {
-      height: 70px;
-      background: #111827;
-      display: flex;
-      align-items: center;
-      padding: 0 20px;
-      gap: 12px;
-      color: #e5e7eb;
-    }
-    .logo-placeholder {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #0b1120;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-    }
-    .logo-text-main {
-      font-size: 1rem;
-      font-weight: 600;
-    }
-    .logo-text-sub {
-      font-size: 0.78rem;
-      color: #9ca3af;
+    @keyframes bgFlow{
+      0%{
+        background-position:0% 0%,100% 0%,50% 100%;
+        filter:hue-rotate(0deg);
+      }
+      50%{
+        background-position:10% 10%,90% 0%,40% 90%;
+        filter:hue-rotate(15deg);
+      }
+      100%{
+        background-position:20% 0%,80% 10%,60% 100%;
+        filter:hue-rotate(30deg);
+      }
     }
 
-    .header {
-      padding: 16px 20px 14px;
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .header-left h1 { font-size: 1.4rem; margin-bottom: 4px; }
-    .header-left p { font-size: 0.9rem; opacity: 0.9; }
-    .header-right { text-align: right; font-size: 0.8rem; }
-
-    .progress-section {
-      padding: 16px 20px 6px;
-      background: #ffffff;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .progress-top {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
-    .score-bar {
-      height: 12px;
-      background: #f3f4f6;
-      border-radius: 999px;
-      overflow: hidden;
-      position: relative;
-    }
-    .score-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573);
-      border-radius: 999px;
-      transition: width 0.6s ease;
-      box-shadow: 0 0 18px rgba(34,197,94,0.5);
-    }
-    .score-text-main {
-      margin-top: 8px;
-      text-align: center;
-      font-size: 1.05rem;
-      font-weight: 600;
+    .app{
+      width:100%;
+      max-width:900px;
+      border-radius:26px;
+      background:rgba(255,255,255,0.78);
+      box-shadow:0 26px 70px rgba(15,23,42,0.25);
+      backdrop-filter:blur(16px) saturate(160%);
+      -webkit-backdrop-filter:blur(16px) saturate(160%);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.8);
     }
 
-    .question {
-      padding: 22px 20px 24px;
-      min-height: 220px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-    .question-num {
-      font-size: 0.8rem;
-      color: #6b7280;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .question-text {
-      font-size: 1.2rem;
-      font-weight: 600;
-      line-height: 1.4;
+    .app-inner{
+      padding:18px 18px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
     }
 
-    .answers {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .top-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
     }
-    .answer-btn {
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 2px solid #e5e7eb;
-      background: #ffffff;
-      cursor: pointer;
-      font-size: 0.98rem;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: all 0.18s ease;
+    .logo-circle{
+      width:52px;height:52px;
+      border-radius:999px;
+      background:conic-gradient(from 200deg,#38bdf8,#a855f7,#22c55e,#f97316,#38bdf8);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:800;font-size:1.3rem;
+      color:#0f172a;
+      box-shadow:0 0 18px rgba(129,140,248,0.65);
+      flex-shrink:0;
     }
-    .answer-letter {
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      border: 2px solid #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 0.9rem;
-      flex-shrink: 0;
+    .title-block{
+      flex:1;
+      text-align:right;
     }
-    .answer-btn:hover {
-      border-color: #4facfe;
-      box-shadow: 0 8px 20px rgba(79,172,254,0.3);
-      transform: translateY(-1px);
+    .title-block h1{
+      font-size:1.35rem;
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      color:#0f172a;
     }
-    .answer-btn.correct {
-      border-color: #22c55e;
-      background: #dcfce7;
-      box-shadow: 0 8px 20px rgba(34,197,94,0.4);
-    }
-    .answer-btn.wrong {
-      border-color: #ef4444;
-      background: #fee2e2;
-      box-shadow: 0 8px 20px rgba(239,68,68,0.4);
-    }
-    .answer-btn.disabled { pointer-events: none; opacity: 0.82; }
-
-    .footer {
-      padding: 14px 20px 16px;
-      background: #f9fafb;
-      border-top: 1px solid #e5e7eb;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.9rem;
-    }
-    .status { color: #6b7280; }
-    .next-btn {
-      padding: 10px 24px;
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      color: white;
-      border: none;
-      border-radius: 999px;
-      font-size: 0.98rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.18s ease;
-    }
-    .next-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 28px rgba(79,172,254,0.5);
+    .title-block span{
+      font-size:0.8rem;
+      color:#6b7280;
     }
 
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15,23,42,0.88);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      backdrop-filter: blur(10px);
+    .progress-wrapper{
+      margin-top:4px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
     }
-    .overlay.active { display: flex; }
-    .overlay-card {
-      background: white;
-      border-radius: 20px;
-      padding: 32px 26px 28px;
-      width: min(420px, 92vw);
-      box-shadow: 0 28px 80px rgba(0,0,0,0.55);
-      text-align: center;
+    .progress-top{
+      display:flex;
+      justify-content:space-between;
+      font-size:0.8rem;
+      color:#6b7280;
     }
-    .overlay-card h2 { font-size: 1.6rem; margin-bottom: 8px; }
-    .overlay-card p { font-size: 0.95rem; color: #6b7280; }
-    .result-stats {
-      margin: 22px 0 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      font-size: 0.98rem;
+    .progress-bar{
+      height:22px;
+      border-radius:999px;
+      border:1px solid rgba(209,213,219,0.9);
+      background:rgba(255,255,255,0.7);
+      overflow:hidden;
+      position:relative;
     }
-    .stat-row { display: flex; justify-content: space-between; }
-    .stat-row span:last-child { font-weight: 600; color: #4f46e5; }
-    .final-bar {
-      height: 14px;
-      margin-top: 14px;
-      border-radius: 999px;
-      background: #f3f4f6;
-      overflow: hidden;
+    .progress-fill{
+      position:absolute;
+      inset:2px;
+      width:0%;
+      border-radius:999px;
+      background:linear-gradient(90deg,#f97316,#fb7185,#22c55e);
+      box-shadow:0 0 18px rgba(249,115,22,0.6);
+      transition:width 0.6s ease;
     }
-    .final-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573);
-      transition: width 0.8s ease;
-    }
-    .overlay-btn {
-      margin-top: 22px;
-      width: 100%;
-      padding: 11px 0;
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 1rem;
+    .score-main{
+      font-size:0.95rem;
+      text-align:right;
+      color:#111827;
     }
 
-    .progress-top span b { font-weight: 600; }
+    .question-side{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .glass-box{
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,0.9);
+      background:rgba(255,255,255,0.85);
+      box-shadow:0 16px 40px rgba(148,163,184,0.35);
+      backdrop-filter:blur(12px) saturate(160%);
+      -webkit-backdrop-filter:blur(12px) saturate(160%);
+    }
+    .question-box{
+      padding:14px 14px 16px;
+    }
+    .question-tag{
+      font-size:0.78rem;
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+      color:#9ca3af;
+      margin-bottom:6px;
+    }
+    .question-text{
+      font-size:1.25rem;
+      font-weight:600;
+      line-height:1.45;
+      color:#111827;
+    }
 
-    @media (max-width: 640px) {
-      .logo-bar { padding: 0 14px; }
-      .header { flex-direction: column; align-items: flex-start; gap: 6px; }
-      .header-right { text-align: left; }
-      .question-text { font-size: 1.05rem; }
+    .answers{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:10px;
+    }
+    .answer-btn{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(229,231,235,0.9);
+      background:rgba(255,255,255,0.9);
+      color:#111827;
+      cursor:pointer;
+      font-size:0.95rem;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      transition:border-color 0.18s,background 0.18s,transform 0.08s,box-shadow 0.18s;
+      box-shadow:0 10px 26px rgba(148,163,184,0.35);
+    }
+    .answer-letter{
+      width:28px;height:28px;
+      border-radius:999px;
+      border:1px solid rgba(209,213,219,0.9);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:600;font-size:0.88rem;
+      color:#6b7280;
+      background:rgba(255,255,255,0.95);
+      flex-shrink:0;
+    }
+    .answer-btn:hover{
+      border-color:#a855f7;
+      background:linear-gradient(135deg,#fdfbff,#e5ecff);
+      transform:translateY(-1px);
+      box-shadow:0 14px 32px rgba(129,140,248,0.4);
+    }
+    .answer-btn.correct{
+      border-color:#22c55e;
+      background:linear-gradient(135deg,#dcfce7,#e0f2fe);
+      box-shadow:0 14px 32px rgba(34,197,94,0.45);
+    }
+    .answer-btn.wrong{
+      border-color:#fb7185;
+      background:linear-gradient(135deg,#fee2e2,#fef9c3);
+      box-shadow:0 14px 32px rgba(248,113,113,0.45);
+    }
+    .answer-btn.disabled{pointer-events:none;opacity:0.95;}
+
+    .bottom-row{
+      margin-top:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:0.85rem;
+      color:#6b7280;
+    }
+    .next-btn{
+      padding:9px 22px;
+      border-radius:999px;
+      border:1px solid rgba(209,213,219,0.9);
+      background:rgba(255,255,255,0.9);
+      color:#111827;
+      font-weight:600;
+      cursor:pointer;
+      font-size:0.95rem;
+      box-shadow:0 14px 32px rgba(148,163,184,0.45);
+      transition:transform 0.08s,box-shadow 0.18s,border-color 0.18s,background 0.18s;
+    }
+    .next-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 18px 40px rgba(129,140,248,0.5);
+      border-color:#a855f7;
+      background:linear-gradient(135deg,#fdfbff,#e0f2fe);
+    }
+
+    .motivation{
+      margin-top:8px;
+      font-size:0.9rem;
+      color:#6b7280;
+      min-height:1.2em;
+    }
+    .motivation span{
+      display:inline-block;
+      opacity:0;
+      transform:translateY(6px);
+      transition:opacity 0.35s ease,transform 0.35s ease;
+    }
+    .motivation span.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,0.3);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:10;
+    }
+    .overlay.active{display:flex;}
+    .overlay-card{
+      width:min(420px,92vw);
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,0.9);
+      background:rgba(255,255,255,0.9);
+      box-shadow:0 26px 70px rgba(148,163,184,0.6);
+      padding:24px 20px 20px;
+      text-align:center;
+      color:#111827;
+    }
+    .overlay-card h2{
+      font-size:1.4rem;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      margin-bottom:6px;
+    }
+    .overlay-card p{
+      font-size:0.9rem;
+      color:#6b7280;
+      margin-bottom:18px;
+    }
+    .overlay-btn{
+      margin-top:16px;
+      width:100%;
+      padding:10px 0;
+      border-radius:999px;
+      border:1px solid rgba(209,213,219,0.9);
+      background:linear-gradient(135deg,#a855f7,#22c55e);
+      color:white;
+      font-weight:600;
+      cursor:pointer;
+      font-size:0.98rem;
+      box-shadow:0 18px 40px rgba(129,140,248,0.7);
+    }
+
+    .final-bar{
+      height:26px;
+      border-radius:999px;
+      border:1px solid rgba(209,213,219,0.95);
+      background:rgba(255,255,255,0.9);
+      overflow:hidden;
+      position:relative;
+    }
+    .final-fill{
+      position:absolute;
+      inset:2px;
+      width:0%;
+      border-radius:999px;
+      background:linear-gradient(90deg,#fb7185,#f97316,#facc15,#22c55e);
+      box-shadow:0 0 26px rgba(248,113,113,0.7);
+      transition:width 1s ease;
+    }
+    .final-score{
+      margin-top:16px;
+      font-size:2.3rem;
+      font-weight:800;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+      background:linear-gradient(90deg,#a855f7,#ec4899,#f97316,#22c55e);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      opacity:0;
+      transform:translateY(10px) scale(0.9);
+      transition:opacity 0.5s ease 0.9s,transform 0.5s ease 0.9s;
+    }
+    .final-score.show{
+      opacity:1;
+      transform:translateY(0) scale(1);
+    }
+    .final-comment{
+      margin-top:6px;
+      font-size:0.9rem;
+      color:#6b7280;
+    }
+
+    .gallery-title{
+      margin-top:18px;
+      font-size:0.9rem;
+      font-weight:600;
+      color:#4b5563;
+    }
+    .gallery{
+      margin-top:8px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
+      gap:10px;
+    }
+    .thumb{
+      width:100%;
+      border-radius:12px;
+      cursor:pointer;
+      object-fit:cover;
+      aspect-ratio:4/3;
+      box-shadow:0 10px 26px rgba(148,163,184,0.6);
+      transition:transform 0.18s ease,box-shadow 0.18s ease;
+    }
+    .thumb:hover{
+      transform:translateY(-2px);
+      box-shadow:0 16px 40px rgba(129,140,248,0.55);
+    }
+
+    .lightbox{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:30;
+    }
+    .lightbox.show{display:flex;}
+    .lightbox img{
+      max-width:92vw;
+      max-height:92vh;
+      border-radius:18px;
+      box-shadow:0 26px 70px rgba(0,0,0,0.85);
+      transform:scale(0.85);
+      opacity:0;
+      animation:zoomIn 0.25s ease forwards;
+    }
+    @keyframes zoomIn{
+      to{transform:scale(1);opacity:1;}
+    }
+
+    @media(max-width:720px){
+      .app-inner{padding:14px 12px 12px;}
+      .title-block{text-align:left;}
+      .top-row{align-items:flex-start;}
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="logo-bar">
-      <div class="logo-placeholder">3D</div>
-      <div>
-        <div class="logo-text-main">Твой логотип</div>
-        <div class="logo-text-sub">Сюда потом поставишь свой PNG / название</div>
-      </div>
-    </div>
+    <div class="app-inner">
+<div class="glass-box" style="padding:0;overflow:hidden;margin-bottom:10px;">
+  <video src="img/banner.mp4"
+         autoplay
+         muted
+         loop
+         playsinline
+         style="width:100%;height:auto;display:block;">
+  </video>
+</div>
 
-    <div class="header">
-      <div class="header-left">
-        <h1>3D‑квиз</h1>
-        <p>20 случайных вопросов из сотни</p>
+      <div class="progress-wrapper">
+        <div class="progress-top">
+          <span>Прогресс: <span id="progNum">0</span>/<span id="progTotal">20</span></span>
+          <span id="scoreMini">Счёт: 0</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="scoreBar"></div>
+        </div>
+        <div class="score-main" id="scoreText">0/20</div>
       </div>
-      <div class="header-right">
-        <div>Вопросов в раунде: <b id="totalPerRun">20</b></div>
-        <div>Всего в базе: <b id="totalPool">100</b></div>
-      </div>
-    </div>
 
-    <div class="progress-section">
-      <div class="progress-top">
-        <span>Прогресс: <b><span id="progNum">0</span>/<span id="progTotal">20</span></b></span>
-        <span id="scoreMini">Счёт: 0</span>
+      <div class="question-side">
+        <div class="glass-box question-box">
+          <div class="question-tag" id="qTag">Вопрос</div>
+          <div class="question-text" id="questionText">
+            Нажмите «Пуск», чтобы начать раунд.
+          </div>
+        </div>
+        <div class="answers" id="answers"></div>
       </div>
-      <div class="score-bar">
-        <div class="score-fill" id="scoreBar"></div>
+
+      <div class="bottom-row">
+        <div>Вопросов в раунде: 20</div>
+        <button class="next-btn" id="nextBtn">Пуск ➤</button>
       </div>
-      <div class="score-text-main" id="scoreText">0/20</div>
-    </div>
-
-    <div class="question">
-      <div class="question-num" id="qNum">Вопрос —</div>
-      <div class="question-text" id="questionText">Нажмите «Пуск», чтобы начать раунд.</div>
-      <div class="answers" id="answers"></div>
-    </div>
-
-    <div class="footer">
-      <div class="status" id="status">Готово к старту.</div>
-      <button class="next-btn" id="nextBtn">Пуск ➤</button>
+      <div class="motivation"><span id="motivationText">Готово к старту.</span></div>
     </div>
   </div>
 
   <div class="overlay active" id="startOverlay">
     <div class="overlay-card">
-      <h2>3D‑квиз</h2>
-      <p>Каждый раз новые 20 вопросов из большой базы. Попробуй набрать максимум и посмотреть, насколько ты 3D‑монстр.</p>
-      <button class="overlay-btn" id="startBtn">Начать ➤</button>
+      <h2>Старт</h2>
+      <p>Разогреем мозг 20 вопросами по 3D‑графике — от геометрии до света и игр.</p>
+      <button class="overlay-btn" id="startBtn">Поехали ➤</button>
     </div>
   </div>
 
   <div class="overlay" id="endOverlay">
     <div class="overlay-card">
-      <h2 id="endTitle">Результаты</h2>
-      <div class="result-stats">
-        <div class="stat-row">
-          <span>Правильных ответов:</span>
-          <span id="endCorrect">0</span>
-        </div>
-        <div class="stat-row">
-          <span>Всего в раунде:</span>
-          <span id="endTotal">20</span>
-        </div>
-        <div class="stat-row">
-          <span>Процент:</span>
-          <span id="endPercent">0%</span>
-        </div>
-      </div>
+      <h2>Итог</h2>
+      <p>Вот как заполнится твоя шкала в этот раз.</p>
       <div class="final-bar">
         <div class="final-fill" id="finalBar"></div>
       </div>
-      <div id="endComment" style="margin-top:16px; font-size:0.98rem; color:#4b5563;"></div>
-      <button class="overlay-btn" id="restartBtn">Сыграть ещё раз ⟳</button>
+      <div class="final-score" id="finalScore">0 / 20</div>
+      <div class="final-comment" id="finalComment"></div>
+
+      <div class="gallery-title">Работы наших студентов</div>
+      <div class="gallery">
+        <img src="img/work1.jpg" alt="" class="thumb">
+        <img src="img/work2.jpg" alt="" class="thumb">
+        <img src="img/work3.jpg" alt="" class="thumb">
+        <img src="img/work4.jpg" alt="" class="thumb">
+        <img src="img/work5.jpg" alt="1" class="thumb">
+        <img src="img/work6.jpg" alt="" class="thumb">
+        <img src="img/work7.jpg" alt="" class="thumb">
+        <img src="img/work8.jpg" alt="" class="thumb">
+        <img src="img/work9.jpg" alt="" class="thumb">
+      </div>
+
+      <button class="overlay-btn" id="restartBtn">Ещё раунд ⟳</button>
     </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <img id="lightboxImg" src="" alt="Просмотр работы">
   </div>
 
   <script>
     const QUESTIONS_PER_RUN = 20;
 
     const praiseMessages = [
-      "Ты крут! Так держать.",
-      "Шикарно, прям 3D‑самурай.",
-      "Красота, вот это уровень.",
-      "Имба, а не ответ.",
-      "Вау, да ты в теме!",
-      "Так и становятся синьорами."
+      "Отлично, чувствуется 3D‑мышление.",
+      "Красиво попал, так держать.",
+      "Вот это ответ, приятно смотреть.",
+      "Очень уверенно, прям рабочий уровень.",
+      "Чётко, видно, что ты в теме."
     ];
-
     const failMessages = [
-      "Печаль, но всё исправимо.",
-      "Грустненько, но ты справишься.",
-      "Чуть‑чуть мимо, зато опыт.",
-      "Не страшно, главное — дальше жать вперёд.",
-      "Не вышло, но потенциал чувствуется.",
-      "Ошибки — это тоже прогресс."
+      "Чуть мимо, но мозг уже прогревается.",
+      "Не страшно, важнее, что ты идёшь дальше.",
+      "Промах — тоже часть прокачки.",
+      "В следующий раз именно этот вопрос зайдёт.",
+      "Ошибки — топливo для роста."
     ];
 
     const allQuestions = [
@@ -1387,140 +1520,164 @@
     let quizStarted = false;
 
     const els = {
-      progNum: document.getElementById('progNum'),
-      progTotal: document.getElementById('progTotal'),
-      scoreMini: document.getElementById('scoreMini'),
-      scoreBar: document.getElementById('scoreBar'),
-      scoreText: document.getElementById('scoreText'),
-      qNum: document.getElementById('qNum'),
-      questionText: document.getElementById('questionText'),
-      answers: document.getElementById('answers'),
-      status: document.getElementById('status'),
-      nextBtn: document.getElementById('nextBtn'),
-      startOverlay: document.getElementById('startOverlay'),
-      endOverlay: document.getElementById('endOverlay'),
-      startBtn: document.getElementById('startBtn'),
-      restartBtn: document.getElementById('restartBtn'),
-      endCorrect: document.getElementById('endCorrect'),
-      endTotal: document.getElementById('endTotal'),
-      endPercent: document.getElementById('endPercent'),
-      finalBar: document.getElementById('finalBar'),
-      endComment: document.getElementById('endComment'),
-      totalPerRun: document.getElementById('totalPerRun'),
-      totalPool: document.getElementById('totalPool')
+      progNum: document.getElementById("progNum"),
+      progTotal: document.getElementById("progTotal"),
+      scoreMini: document.getElementById("scoreMini"),
+      scoreBar: document.getElementById("scoreBar"),
+      scoreText: document.getElementById("scoreText"),
+      qTag: document.getElementById("qTag"),
+      questionText: document.getElementById("questionText"),
+      answers: document.getElementById("answers"),
+      nextBtn: document.getElementById("nextBtn"),
+      startOverlay: document.getElementById("startOverlay"),
+      startBtn: document.getElementById("startBtn"),
+      endOverlay: document.getElementById("endOverlay"),
+      restartBtn: document.getElementById("restartBtn"),
+      finalBar: document.getElementById("finalBar"),
+      finalScore: document.getElementById("finalScore"),
+      finalComment: document.getElementById("finalComment"),
+      motivationText: document.getElementById("motivationText"),
+      lightbox: document.getElementById("lightbox"),
+      lightboxImg: document.getElementById("lightboxImg")
     };
 
-    els.totalPerRun.textContent = QUESTIONS_PER_RUN;
     els.progTotal.textContent = QUESTIONS_PER_RUN;
-    els.endTotal.textContent = QUESTIONS_PER_RUN;
-    els.totalPool.textContent = allQuestions.length;
 
-    function pickQuestions() {
-      const indices = allQuestions.map((_, i) => i);
-      indices.sort(() => Math.random() - 0.5);
-      const slice = indices.slice(0, QUESTIONS_PER_RUN);
-      selectedQuestions = slice.map(i => ({ ...allQuestions[i] }));
+    function randFrom(arr){return arr[Math.floor(Math.random()*arr.length)];}
+
+    function setMotivation(text){
+      els.motivationText.classList.remove("show");
+      void els.motivationText.offsetWidth;
+      els.motivationText.textContent = text;
+      els.motivationText.classList.add("show");
     }
 
-    function randFrom(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
+    function pickQuestions(){
+      const idx = allQuestions.map((_,i)=>i);
+      idx.sort(()=>Math.random()-0.5);
+      const slice = idx.slice(0,QUESTIONS_PER_RUN);
+      selectedQuestions = slice.map(i=>({...allQuestions[i]}));
     }
 
-    function startQuiz() {
+    function initGallery(){
+      const thumbs = document.querySelectorAll(".thumb");
+      thumbs.forEach(img=>{
+        img.addEventListener("click",()=>{
+          els.lightboxImg.src = img.src;
+          els.lightbox.classList.add("show");
+        });
+      });
+      els.lightbox.addEventListener("click",()=>{
+        els.lightbox.classList.remove("show");
+      });
+    }
+    initGallery();
+
+    function startQuiz(){
       pickQuestions();
       currentIndex = 0;
       score = 0;
       quizStarted = true;
-      els.startOverlay.classList.remove('active');
-      els.endOverlay.classList.remove('active');
-      els.status.textContent = "Выберите ответ.";
+      els.startOverlay.classList.remove("active");
+      els.endOverlay.classList.remove("active");
+      els.finalBar.style.width = "0%";
+      els.finalScore.classList.remove("show");
+      setMotivation("Поехали, первый вопрос уже ждёт.");
       updateProgress();
       renderQuestion();
     }
 
-    function updateProgress() {
+    function updateProgress(){
       els.progNum.textContent = currentIndex;
       els.scoreMini.textContent = `Счёт: ${score}`;
       els.scoreText.textContent = `${score}/${QUESTIONS_PER_RUN}`;
-      const progress = (currentIndex / QUESTIONS_PER_RUN) * 100;
+      const progress = (currentIndex/QUESTIONS_PER_RUN)*100;
       els.scoreBar.style.width = progress + "%";
     }
 
-    function renderQuestion() {
+    function maybeMotivationBetween(){
+      if(Math.random() < 0.35){
+        setMotivation(randFrom(praiseMessages));
+      }else{
+        setMotivation("Следующий вопрос — ещё один шаг к сильному результату.");
+      }
+    }
+
+    function renderQuestion(){
       const q = selectedQuestions[currentIndex];
       answered = false;
-      els.qNum.textContent = `Вопрос ${currentIndex + 1} из ${QUESTIONS_PER_RUN}`;
+      els.qTag.textContent = `Вопрос ${currentIndex+1}`;
       els.questionText.textContent = q.text;
       els.answers.innerHTML = "";
-      els.status.textContent = "Выберите ответ.";
-      const letters = "ABCDE".split("");
+      setMotivation("Выбери вариант, опираясь на свой опыт и чувство логики.");
 
-      q.options.forEach((opt, i) => {
+      const letters = "ABCDE".split("");
+      q.options.forEach((opt,i)=>{
         const btn = document.createElement("button");
         btn.className = "answer-btn";
         btn.innerHTML = `
-          <div class="answer-letter">${letters[i] || ""}</div>
+          <div class="answer-letter">${letters[i]||""}</div>
           <span>${opt}</span>
         `;
-        btn.onclick = () => handleAnswer(i, btn);
+        btn.onclick = ()=>handleAnswer(i,btn);
         els.answers.appendChild(btn);
       });
 
-      els.nextBtn.textContent = currentIndex === QUESTIONS_PER_RUN - 1 ? "Результат" : "Далее ➤";
+      els.nextBtn.textContent = currentIndex===QUESTIONS_PER_RUN-1 ? "Результат" : "Далее ➤";
       updateProgress();
     }
 
-    function handleAnswer(selectedIndex, btnEl) {
-      if (!quizStarted || answered) return;
+    function handleAnswer(selectedIndex,btnEl){
+      if(!quizStarted || answered) return;
       answered = true;
-
       const q = selectedQuestions[currentIndex];
       const buttons = els.answers.querySelectorAll(".answer-btn");
 
-      buttons.forEach((b, i) => {
+      buttons.forEach((b,i)=>{
         b.classList.add("disabled");
-        if (i === q.correctIndex) b.classList.add("correct");
+        if(i===q.correctIndex) b.classList.add("correct");
       });
 
-      if (selectedIndex === q.correctIndex) {
+      if(selectedIndex===q.correctIndex){
         score++;
         btnEl.classList.add("correct");
-        els.status.textContent = randFrom(praiseMessages);
-      } else {
+        setMotivation(randFrom(praiseMessages));
+      }else{
         btnEl.classList.add("wrong");
-        els.status.textContent = randFrom(failMessages);
+        setMotivation(randFrom(failMessages));
       }
 
       els.scoreMini.textContent = `Счёт: ${score}`;
       els.scoreText.textContent = `${score}/${QUESTIONS_PER_RUN}`;
     }
 
-    function showResults() {
-      const percent = Math.round((score / QUESTIONS_PER_RUN) * 100);
-      els.endCorrect.textContent = score;
-      els.endPercent.textContent = percent + "%";
-      els.finalBar.style.width = percent + "%";
+    function showResults(){
+      const percent = Math.round((score/QUESTIONS_PER_RUN)*100);
+      els.finalScore.textContent = `${score} / ${QUESTIONS_PER_RUN}`;
+      els.finalComment.textContent =
+        percent>=85 ? "Очень мощно. Этот результат уже можно показывать клиентам и друзьям." :
+        percent>=60 ? "Крепко. Ещё пару заходов — и шкала будет забита под завязку." :
+        percent>=30 ? "Неплохо для разминки. С каждым кругом будет заметно лучше." :
+                      "Старт есть. Если не бросать, через пару недель ты сам не узнаешь свой уровень.";
 
-      let comment;
-      if (percent >= 85) comment = "🔥 Жёстко! Ты реально шаришь в 3D.";
-      else if (percent >= 60) comment = "👍 Уверенный уровень, можно уже мидлиться.";
-      else if (percent >= 30) comment = "📚 База есть, докрути теорию и будет топ.";
-      else comment = "🚀 Старт сделан. Если продолжишь, будешь разваливать 3D‑мир.";
-
-      els.endComment.textContent = comment;
       els.endOverlay.classList.add("active");
+      requestAnimationFrame(()=>{
+        els.finalBar.style.width = percent + "%";
+        els.finalScore.classList.add("show");
+      });
     }
 
-    els.nextBtn.onclick = () => {
-      if (!quizStarted) {
+    els.nextBtn.onclick = ()=>{
+      if(!quizStarted){
         startQuiz();
         return;
       }
-      if (!answered) return;
-      if (currentIndex < QUESTIONS_PER_RUN - 1) {
+      if(!answered) return;
+      if(currentIndex<QUESTIONS_PER_RUN-1){
         currentIndex++;
         renderQuestion();
-      } else {
+        maybeMotivationBetween();
+      }else{
         showResults();
       }
     };
